@@ -2,18 +2,20 @@ from PySide2 import QtWidgets, QtGui, QtCore
 import os
 from Utilities.FlowLayout import FlowLayout 
 from LogicModules.AssetSpawner import AssetSpawner
+from VisualModules.Dialogs.PropertiesDialog import PropertiesDialog
+
 
 class GridItem(QtWidgets.QFrame):
     clicked = QtCore.Signal(str)
+
     def __init__(self, file_path=None, style_sheet="", parent=None):
         super().__init__(parent)
-        self.setObjectName("gridItem") 
-        self.setAttribute(QtCore.Qt.WA_Hover, True)  
-        self.setProperty("hovered", False) 
+        self.setObjectName("gridItem")
+        self.setAttribute(QtCore.Qt.WA_Hover, True)
+        self.setProperty("hovered", False)
         self.file_path = file_path
 
         self.setFixedSize(100, 100)
-        #self.setCursor(QtCore.Qt.PointingHandCursor)
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         if style_sheet:
             self.setStyleSheet(style_sheet)
@@ -25,18 +27,19 @@ class GridItem(QtWidgets.QFrame):
             if os.path.exists(thumbnail_path):
                 pixmap = QtGui.QPixmap(thumbnail_path)
                 if not pixmap.isNull():
-                    zoom_factor = 0.8  
+                    zoom_factor = 0.8
                     target_width = int(self.width() * zoom_factor)
                     target_height = int(self.height() * zoom_factor)
                     self.thumbnail = pixmap.scaled(
-                    target_width, target_height, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+                        target_width, target_height, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation
+                    )
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(2)
 
         self.label = QtWidgets.QLabel(self)
-        self.label.setObjectName("gridItemLabel") 
+        self.label.setObjectName("gridItemLabel")
         self.label.setText(os.path.splitext(os.path.basename(file_path))[0] if file_path else "")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setWordWrap(True)
@@ -48,7 +51,7 @@ class GridItem(QtWidgets.QFrame):
 
     def enterEvent(self, event):
         self.setProperty("hovered", True)
-        self.setStyle(self.styleSheet())  # reapply style to trigger change
+        self.setStyle(self.styleSheet())
         super().enterEvent(event)
 
     def leaveEvent(self, event):
@@ -67,15 +70,83 @@ class GridItem(QtWidgets.QFrame):
             painter = QtGui.QPainter(self)
             painter.setRenderHint(QtGui.QPainter.Antialiasing)
             painter.setRenderHint(QtGui.QPainter.SmoothPixmapTransform)
-
             x = (self.width() - self.thumbnail.width()) // 2
-            y = (self.height() - self.thumbnail.height()) // 2 - 10  
+            y = (self.height() - self.thumbnail.height()) // 2 - 10
             painter.drawPixmap(x, y, self.thumbnail)
-    
+
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton and self.file_path:
             self.clicked.emit(self.file_path)
         super().mousePressEvent(event)
+
+    def contextMenuEvent(self, event):
+        menu = QtWidgets.QMenu(self)
+
+        delete_action = menu.addAction("Delete")
+        properties_action = menu.addAction("Properties")
+
+        action = menu.exec_(event.globalPos())
+
+        if action == delete_action:
+            reply = QtWidgets.QMessageBox.question(
+                self,
+                "Delete Asset",
+                f"Are you sure you want to delete '{os.path.basename(self.file_path)}'?",
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            )
+
+            if reply == QtWidgets.QMessageBox.Yes:
+                try:
+                    if os.path.exists(self.file_path):
+                        os.remove(self.file_path)
+
+                    thumbnail_path = os.path.splitext(self.file_path)[0] + ".png"
+                    if os.path.exists(thumbnail_path):
+                        os.remove(thumbnail_path)
+
+                    self.deleteLater()
+                except Exception as e:
+                    QtWidgets.QMessageBox.warning(
+                        self,
+                        "Error",
+                        f"Failed to delete asset: {str(e)}"
+                    )
+
+        elif action == properties_action:
+            info = f"File: {self.file_path}"
+            if os.path.exists(self.file_path):
+                size = os.path.getsize(self.file_path) / 1024
+                info += f"\nSize: {size:.2f} KB"
+            QtWidgets.QMessageBox.information(self, "Properties", info)
+
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton and self.file_path:
+            self.clicked.emit(self.file_path)
+        elif event.button() == QtCore.Qt.RightButton and self.file_path:
+            self._show_context_menu(event.globalPos())
+        super().mousePressEvent(event)
+
+    def _show_context_menu(self, global_pos):
+        menu = QtWidgets.QMenu()
+        delete_action = menu.addAction("Delete")
+        properties_action = menu.addAction("Properties")
+
+        action = menu.exec_(global_pos)
+        if action == delete_action:
+            self._confirm_deletion()
+        elif action == properties_action:
+            self._open_properties()
+
+    def _open_properties(self):
+        dialog = PropertiesDialog(self.file_path, self)
+        dialog.fileRenamed.connect(self._on_file_renamed)
+        dialog.exec_()
+
+    def _on_file_renamed(self, old_path, new_path):
+        self.file_path = new_path
+        self.label.setText(os.path.splitext(os.path.basename(new_path))[0])
+
+
 
 
 
