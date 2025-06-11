@@ -12,11 +12,22 @@ class GridItem(QtWidgets.QFrame):
         if style_sheet:
             self.setStyleSheet(style_sheet)
 
+        self.thumbnail = None
+        if file_path:
+            base, _ = os.path.splitext(file_path)
+            thumbnail_path = base + ".png"
+            if os.path.exists(thumbnail_path):
+                pixmap = QtGui.QPixmap(thumbnail_path)
+                if not pixmap.isNull():
+                    zoom_factor = 0.8  
+                    target_width = int(self.width() * zoom_factor)
+                    target_height = int(self.height() * zoom_factor)
+                    self.thumbnail = pixmap.scaled(
+                    target_width, target_height, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-
-        layout.addStretch()
+        layout.setSpacing(2)
 
         self.label = QtWidgets.QLabel(self)
         self.label.setObjectName("gridItemLabel") 
@@ -26,7 +37,21 @@ class GridItem(QtWidgets.QFrame):
         self.label.setFixedHeight(20)
         self.label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
 
+        layout.addStretch()
         layout.addWidget(self.label)
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        if self.thumbnail:
+            painter = QtGui.QPainter(self)
+            painter.setRenderHint(QtGui.QPainter.Antialiasing)
+            painter.setRenderHint(QtGui.QPainter.SmoothPixmapTransform)
+
+            x = (self.width() - self.thumbnail.width()) // 2
+            y = (self.height() - self.thumbnail.height()) // 2 - 10  
+            painter.drawPixmap(x, y, self.thumbnail)
+
+
 
 
 class GridView(QtWidgets.QWidget):

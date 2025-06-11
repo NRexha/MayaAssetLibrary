@@ -6,3 +6,12 @@ class CustomFileSystemModel(QtWidgets.QFileSystemModel):
             if section == 0:
                 return "Library"
         return super().headerData(section, orientation, role)
+
+    def flags(self, index):
+        default_flags = super().flags(index)
+        if not index.isValid():
+            return default_flags
+
+        if index.column() == 0:
+            return default_flags | QtCore.Qt.ItemIsEditable
+        return default_flags
