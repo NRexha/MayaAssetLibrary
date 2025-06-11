@@ -62,21 +62,37 @@ outline: none;
     background-color: #1e1e1e;
 }
 
+QWidget:focus {
+border: none;
+outline: none;
+}
+
 #gridInnerWidget {
     margin-top: 4px;
     margin-left: 4px; 
 }
 
-#gridItem {
+#gridItem[hovered="false"] {
     border: 1px solid black;
-    background-color:rgba(103, 134, 165, 0.);
+    background-color: rgba(103, 134, 165, 0.0);
+}
+
+#gridItem[hovered="true"] {
+    background-color: rgba(103, 134, 165, 0.15);
+    border: 1px solid #6786a5;
 }
 
 #gridItemLabel {
-    background-color:  #1e1e1e;
+    background-color: #1e1e1e;
     color: grey;
     font-size: 10px;
 }
+
+#gridItem[hovered="true"] #gridItemLabel {
+    color: white;
+    background-color: rgba(103, 134, 165, 1);
+}
+
 
 
 

@@ -37,6 +37,13 @@ class FolderTreeView(QtWidgets.QTreeView):
             path = self.model.filePath(index)
             self.directory_selected.emit(path)
 
+    def get_selected_directory(self):
+        index = self.currentIndex()
+        if index.isValid():
+            return self.model.filePath(index)
+        return None
+
+
     def show_context_menu(self, point):
         index = self.indexAt(point)
         is_folder = index.isValid() and self.model.isDir(index)

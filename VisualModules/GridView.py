@@ -1,19 +1,25 @@
 from PySide2 import QtWidgets, QtGui, QtCore
 import os
 from Utilities.FlowLayout import FlowLayout 
+from LogicModules.AssetSpawner import AssetSpawner
 
 class GridItem(QtWidgets.QFrame):
+    clicked = QtCore.Signal(str)
     def __init__(self, file_path=None, style_sheet="", parent=None):
         super().__init__(parent)
         self.setObjectName("gridItem") 
+        self.setAttribute(QtCore.Qt.WA_Hover, True)  
+        self.setProperty("hovered", False) 
+        self.file_path = file_path
 
         self.setFixedSize(100, 100)
+        #self.setCursor(QtCore.Qt.PointingHandCursor)
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         if style_sheet:
             self.setStyleSheet(style_sheet)
 
         self.thumbnail = None
-        if file_path:
+        if self.file_path:
             base, _ = os.path.splitext(file_path)
             thumbnail_path = base + ".png"
             if os.path.exists(thumbnail_path):
@@ -40,6 +46,21 @@ class GridItem(QtWidgets.QFrame):
         layout.addStretch()
         layout.addWidget(self.label)
 
+    def enterEvent(self, event):
+        self.setProperty("hovered", True)
+        self.setStyle(self.styleSheet())  # reapply style to trigger change
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self.setProperty("hovered", False)
+        self.setStyle(self.styleSheet())
+        super().leaveEvent(event)
+
+    def setStyle(self, style):
+        self.setStyleSheet(style)
+        for child in self.findChildren(QtWidgets.QWidget):
+            child.setStyleSheet(style)
+
     def paintEvent(self, event):
         super().paintEvent(event)
         if self.thumbnail:
@@ -50,6 +71,11 @@ class GridItem(QtWidgets.QFrame):
             x = (self.width() - self.thumbnail.width()) // 2
             y = (self.height() - self.thumbnail.height()) // 2 - 10  
             painter.drawPixmap(x, y, self.thumbnail)
+    
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton and self.file_path:
+            self.clicked.emit(self.file_path)
+        super().mousePressEvent(event)
 
 
 
@@ -95,5 +121,6 @@ class GridView(QtWidgets.QWidget):
         files = [f for f in file_paths if f.lower().endswith(('.fbx', '.obj'))]
         for f in files:
             item = GridItem(f, style_sheet=self._style_sheet)
+            item.clicked.connect(AssetSpawner.spawn_asset)  
             self.flow_layout.addWidget(item)
 
