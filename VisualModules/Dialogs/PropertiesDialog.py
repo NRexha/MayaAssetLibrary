@@ -25,14 +25,11 @@ class PropertiesDialog(QtWidgets.QDialog):
 
         self.full_path_label = QtWidgets.QLabel(file_path)
         self.full_path_label.setWordWrap(True)
-        layout.addWidget(QtWidgets.QLabel("File Path:"))
-        layout.addWidget(self.full_path_label)
+        layout.addWidget(QtWidgets.QLabel(f"File Path: {file_path}"))
+        layout.addWidget(QtWidgets.QLabel(f"Created: {self._get_creation_date()}"))
+        layout.addWidget(QtWidgets.QLabel(f"Size: {self._get_size()}"))
+        layout.addWidget(QtWidgets.QLabel(f"Triangles: {self._get_triangle_count()}"))
 
-        file_info_layout = QtWidgets.QFormLayout()
-        file_info_layout.addRow("Size:", QtWidgets.QLabel(self._get_size()))
-        file_info_layout.addRow("Created:", QtWidgets.QLabel(self._get_creation_date()))
-        file_info_layout.addRow("Triangles:", QtWidgets.QLabel(self._get_triangle_count()))
-        layout.addLayout(file_info_layout)
 
         button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         button_box.accepted.connect(self._apply_changes)
@@ -52,6 +49,7 @@ class PropertiesDialog(QtWidgets.QDialog):
             return "N/A"
 
         try:
+
             before = set(cmds.ls(assemblies=True))
             imported = cmds.file(self.original_path, i=True, returnNewNodes=True, type="OBJ" if self.original_path.lower().endswith(".obj") else "FBX")
             after = set(cmds.ls(assemblies=True))

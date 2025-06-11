@@ -4,7 +4,6 @@ from Utilities.FlowLayout import FlowLayout
 from LogicModules.AssetSpawner import AssetSpawner
 from VisualModules.Dialogs.PropertiesDialog import PropertiesDialog
 
-
 class GridItem(QtWidgets.QFrame):
     clicked = QtCore.Signal(str)
 
@@ -31,7 +30,9 @@ class GridItem(QtWidgets.QFrame):
                     target_width = int(self.width() * zoom_factor)
                     target_height = int(self.height() * zoom_factor)
                     self.thumbnail = pixmap.scaled(
-                        target_width, target_height, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation
+                        target_width, target_height,
+                        QtCore.Qt.KeepAspectRatio,
+                        QtCore.Qt.SmoothTransformation
                     )
 
         layout = QtWidgets.QVBoxLayout(self)
@@ -45,6 +46,7 @@ class GridItem(QtWidgets.QFrame):
         self.label.setWordWrap(True)
         self.label.setFixedHeight(20)
         self.label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.label.setAutoFillBackground(True)
 
         layout.addStretch()
         layout.addWidget(self.label)
@@ -77,51 +79,6 @@ class GridItem(QtWidgets.QFrame):
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton and self.file_path:
             self.clicked.emit(self.file_path)
-        super().mousePressEvent(event)
-
-    def contextMenuEvent(self, event):
-        menu = QtWidgets.QMenu(self)
-
-        delete_action = menu.addAction("Delete")
-        properties_action = menu.addAction("Properties")
-
-        action = menu.exec_(event.globalPos())
-
-        if action == delete_action:
-            reply = QtWidgets.QMessageBox.question(
-                self,
-                "Delete Asset",
-                f"Are you sure you want to delete '{os.path.basename(self.file_path)}'?",
-                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
-            )
-
-            if reply == QtWidgets.QMessageBox.Yes:
-                try:
-                    if os.path.exists(self.file_path):
-                        os.remove(self.file_path)
-
-                    thumbnail_path = os.path.splitext(self.file_path)[0] + ".png"
-                    if os.path.exists(thumbnail_path):
-                        os.remove(thumbnail_path)
-
-                    self.deleteLater()
-                except Exception as e:
-                    QtWidgets.QMessageBox.warning(
-                        self,
-                        "Error",
-                        f"Failed to delete asset: {str(e)}"
-                    )
-
-        elif action == properties_action:
-            info = f"File: {self.file_path}"
-            if os.path.exists(self.file_path):
-                size = os.path.getsize(self.file_path) / 1024
-                info += f"\nSize: {size:.2f} KB"
-            QtWidgets.QMessageBox.information(self, "Properties", info)
-
-    def mousePressEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton and self.file_path:
-            self.clicked.emit(self.file_path)
         elif event.button() == QtCore.Qt.RightButton and self.file_path:
             self._show_context_menu(event.globalPos())
         super().mousePressEvent(event)
@@ -136,6 +93,30 @@ class GridItem(QtWidgets.QFrame):
             self._confirm_deletion()
         elif action == properties_action:
             self._open_properties()
+
+    def _confirm_deletion(self):
+        reply = QtWidgets.QMessageBox.question(
+            self,
+            "Delete Asset",
+            f"Are you sure you want to delete '{os.path.basename(self.file_path)}'?",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+        )
+        if reply == QtWidgets.QMessageBox.Yes:
+            try:
+                if os.path.exists(self.file_path):
+                    os.remove(self.file_path)
+
+                thumbnail_path = os.path.splitext(self.file_path)[0] + ".png"
+                if os.path.exists(thumbnail_path):
+                    os.remove(thumbnail_path)
+
+                self.deleteLater()
+            except Exception as e:
+                QtWidgets.QMessageBox.warning(
+                    self,
+                    "Error",
+                    f"Failed to delete asset: {str(e)}"
+                )
 
     def _open_properties(self):
         dialog = PropertiesDialog(self.file_path, self)
@@ -165,6 +146,11 @@ class GridView(QtWidgets.QWidget):
         self.inner_widget.setObjectName("gridInnerWidget")
         self.inner_widget.setContentsMargins(5, 5, 0, 0) 
 
+        palette = self.palette()
+        palette.setColor(QtGui.QPalette.Window, QtGui.QColor("#1e1e1e"))
+        self.setPalette(palette)
+        self.setAutoFillBackground(True)
+        self.setAttribute(QtCore.Qt.WA_OpaquePaintEvent, True)
 
 
         self.flow_layout = FlowLayout(self.inner_widget, spacing=10)
@@ -178,6 +164,11 @@ class GridView(QtWidgets.QWidget):
         layout.addWidget(self.scroll_area)
 
         self._style_sheet = ""
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+        painter.fillRect(self.rect(), QtGui.QColor("#1e1e1e"))
+        super().paintEvent(event)
 
     def setStyleSheet(self, style):
         super().setStyleSheet(style)

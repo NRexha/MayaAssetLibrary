@@ -12,7 +12,7 @@ class FolderTreeView(QtWidgets.QTreeView):
         self.model = cm()
         self.model.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot)
         self.setModel(self.model)
-        self.setHeaderHidden(False)
+        self.setHeaderHidden(True)
         self.setAnimated(True)
         self.setIndentation(20)
         self.model.setRootPath('')

@@ -5,16 +5,20 @@ window_instance = None
 
 def open_asset_library(*args):
     global window_instance, main_window
+
+    try:
+        if cmds.workspaceControl('AssetsLibraryWindowWorkspaceControl', exists=True):
+            cmds.deleteUI('AssetsLibraryWindowWorkspaceControl', control=True)
+    except Exception as e:
+        print(f"Could not delete existing workspaceControl: {e}")
+
     if main_window is None:
         from VisualModules.MainWindow import MainWindow as MW
         main_window = MW
 
-    if window_instance is None or not window_instance.isVisible():
-        window_instance = main_window()
-        window_instance.run()
-    else:
-        window_instance.raise_()
-        window_instance.activateWindow()
+    window_instance = main_window()
+    window_instance.run()
+
 
 def refresh_asset_library(*args):
     try:
