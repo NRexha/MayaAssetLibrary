@@ -23,6 +23,7 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         self.setObjectName(self.toolName)
         self.setWindowTitle("Assets Library")
         self.setMinimumSize(800, 500)
+        self.current_theme = "dark" 
 
         self.style_sheet = self.get_style_sheet()
         self.setStyleSheet(self.style_sheet)
@@ -32,7 +33,8 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
         self.toolbar = ToolBar(parent=self)
         self.toolbar.setStyleSheet(self.style_sheet)
-        self.toolbar.setFixedHeight(25)
+        self.toolbar.setFixedHeight(20)
+        self.toolbar.theme_changed.connect(self.on_theme_changed)
 
         self.folder_tree = FolderTreeView(self)
         self.folder_tree.setStyleSheet(self.style_sheet)
@@ -51,7 +53,7 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         main_layout.setSpacing(0)
         main_layout.addWidget(self.toolbar)
 
-        drop_btn = QtWidgets.QPushButton("Add Selected Mesh", self)
+        drop_btn = QtWidgets.QPushButton("Add Mesh To Library", self)
         drop_btn.clicked.connect(self.add_selected_mesh)
 
         splitter = QtWidgets.QSplitter()
@@ -69,10 +71,22 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
                 widget.close()
                 widget.deleteLater()
 
-    def get_style_sheet(self):
-        self.style_path = os.path.join(os.path.dirname(__file__), 'Style/style.qss')
+    def get_style_sheet(self, theme="dark"):
+        file_name = "dark.qss" if theme == "dark" else "light.qss"
+        self.style_path = os.path.join(os.path.dirname(__file__), f'Style/{file_name}')
         with open(self.style_path, 'r') as f:
             return f.read()
+
+    def apply_style_sheet(self):
+        self.setStyleSheet(self.style_sheet)
+        self.toolbar.setStyleSheet(self.style_sheet)
+        self.folder_tree.setStyleSheet(self.style_sheet)
+        self.grid_view.setStyleSheet(self.style_sheet)
+
+    def on_theme_changed(self, theme):
+        self.current_theme = theme
+        self.style_sheet = self.get_style_sheet(theme)
+        self.apply_style_sheet()
 
     def add_selected_mesh(self):
         selected_folder = self.folder_tree.get_selected_directory()

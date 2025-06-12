@@ -1,0 +1,105 @@
+/*---------------------------MAIN WINDOW---------------------------*/
+QDialog {
+    background-color:#dadada;
+}
+
+/*---------------------------TOOL BAR---------------------------*/
+QMenuBar {
+    background: transparent;
+    spacing: 0px; 
+    padding-left: 1px; 
+    padding-top: 0px;
+    padding-bottom : 0px;
+}
+QMenuBar::item {
+    background: transparent;
+    padding: 2px 6px; 
+    margin: 0px;
+    font-size: 10pt; 
+    color:rgb(0, 0, 0);
+}
+QMenuBar::item:selected {
+    background-color: #6786a5; 
+    color :rgb(0, 0, 0)
+}
+
+QMenu {
+    background-color: #dadada;
+    border: 1px solid #555;
+    font-size: 10pt; 
+}
+QMenu::item:selected {
+    background-color: #6786a5;
+    color: black;
+}
+
+/*---------------------------TREE VIEW---------------------------*/
+QTreeView {
+    background-color: #dadada;
+    alternate-background-color: #2a2a2a;
+    color:rgb(0, 0, 0);
+    padding-top: 0px;
+    padding-left: 4px; 
+    outline : none;
+}
+
+QTreeView::item {
+    height: 24px;
+}
+
+QTreeView::item:selected {
+    background-color: #6786a5;
+    color: white;
+}
+
+QTreeView:focus {
+border: none;
+outline: none;
+}
+
+/*---------------------------GRID VIEW---------------------------*/
+#gridView, 
+#gridView QScrollArea, 
+#gridInnerWidget {
+    background-color: #dadada;
+}
+
+QWidget:focus {
+border: none;
+outline: none;
+}
+
+#gridInnerWidget {
+    margin-top: 4px;
+    margin-left: 4px; 
+}
+
+#gridItem[hovered="false"] {
+    border: 1px solid #2a2a2a;
+    background-color: rgba(103, 134, 165, 0.0);
+}
+
+#gridItem[hovered="true"] {
+    background-color: rgba(103, 134, 165, 0.15);
+    border: 1px solid #6786a5;
+}
+
+#gridItemLabel {
+    background-color: #2a2a2a;
+    color: grey;
+    font-size: 10px;
+}
+
+#gridItem[hovered="true"] #gridItemLabel {
+    color: white;
+    background-color: rgba(103, 134, 165, 1);
+}
+
+
+
+
+
+
+
+
+
