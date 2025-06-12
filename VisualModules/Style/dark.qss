@@ -95,6 +95,10 @@ outline: none;
     background-color: rgba(103, 134, 165, 1);
 }
 
+QListWidget{
+    background-color: #1e1e1e;
+}
+
 
 
 

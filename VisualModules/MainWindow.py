@@ -6,6 +6,7 @@ from VisualModules.ToolBar import ToolBar
 from VisualModules.FolderTreeView import FolderTreeView
 from VisualModules.GridView import GridView
 from VisualModules.Dialogs.ConfigureDialog import ConfigureDialog
+from VisualModules.Categories import Categories
 from LogicModules.Configuration import Configuration
 from LogicModules.AssetExporter import AssetExport
 import os
@@ -56,10 +57,22 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         drop_btn = QtWidgets.QPushButton("Add Mesh To Library", self)
         drop_btn.clicked.connect(self.add_selected_mesh)
 
+        left_widget = QtWidgets.QWidget()
+        left_layout = QtWidgets.QVBoxLayout(left_widget)
+        left_layout.setContentsMargins(0, 0, 0, 0)
+        left_layout.setSpacing(2)
+
+        left_layout.addWidget(self.folder_tree)
+
+        self.categories = Categories(self)
+        self.categories.setStyleSheet(self.style_sheet)
+        left_layout.addWidget(self.categories)
+
         splitter = QtWidgets.QSplitter()
-        splitter.addWidget(self.folder_tree)
+        splitter.addWidget(left_widget)
         splitter.addWidget(self.grid_view)
         splitter.setSizes([225, 575])
+
         main_layout.addWidget(splitter)
         main_layout.addWidget(drop_btn)
 

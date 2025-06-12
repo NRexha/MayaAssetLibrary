@@ -3,6 +3,8 @@ import os
 from Utilities.FlowLayout import FlowLayout 
 from LogicModules.AssetSpawner import AssetSpawner
 from VisualModules.Dialogs.PropertiesDialog import PropertiesDialog
+import json
+from LogicModules.Configuration import Configuration
 
 class GridItem(QtWidgets.QFrame):
     clicked = QtCore.Signal(str)
@@ -50,6 +52,7 @@ class GridItem(QtWidgets.QFrame):
 
         layout.addStretch()
         layout.addWidget(self.label)
+
 
     def enterEvent(self, event):
         self.setProperty("hovered", True)
@@ -110,13 +113,21 @@ class GridItem(QtWidgets.QFrame):
                 if os.path.exists(thumbnail_path):
                     os.remove(thumbnail_path)
 
+                assignments = Configuration.load_assignments()
+                base_name = os.path.splitext(os.path.basename(self.file_path))[0]
+                if base_name in assignments:
+                    del assignments[base_name]
+                    Configuration.save_assignments(assignments)
+
                 self.deleteLater()
+
             except Exception as e:
                 QtWidgets.QMessageBox.warning(
                     self,
                     "Error",
                     f"Failed to delete asset: {str(e)}"
                 )
+
 
     def _open_properties(self):
         dialog = PropertiesDialog(self.file_path, self)
