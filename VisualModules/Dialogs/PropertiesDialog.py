@@ -25,15 +25,15 @@ class PropertiesDialog(QtWidgets.QDialog):
         self.name_field = QtWidgets.QLineEdit(self.base_name)
         layout.addWidget(QtWidgets.QLabel("Asset Name:"))
         layout.addWidget(self.name_field)
-
+        self.category_combo = QtWidgets.QComboBox()
+        layout.addWidget(QtWidgets.QLabel("Category:"))
+        layout.addWidget(self.category_combo)
+        file_path = file_path.replace('\\', '/')
         layout.addWidget(QtWidgets.QLabel(f"File Path: {file_path}"))
         layout.addWidget(QtWidgets.QLabel(f"Created: {self._get_creation_date()}"))
         layout.addWidget(QtWidgets.QLabel(f"Size: {self._get_size()}"))
         layout.addWidget(QtWidgets.QLabel(f"Triangles: {self._get_triangle_count()}"))
 
-        self.category_combo = QtWidgets.QComboBox()
-        layout.addWidget(QtWidgets.QLabel("Category:"))
-        layout.addWidget(self.category_combo)
         self._load_categories()
         self._load_assigned_category()
 
@@ -69,24 +69,36 @@ class PropertiesDialog(QtWidgets.QDialog):
             return "N/A"
 
     def _load_categories(self):
+        self.category_combo.setEditable(False)
         self.category_combo.clear()
+
+        placeholder = "— No category selected —"
+        self.category_combo.addItem(placeholder)
+        self.category_combo.model().item(0).setEnabled(False) 
+
         if not os.path.exists(CATEGORIES_JSON_PATH):
             return
+
         with open(CATEGORIES_JSON_PATH, "r") as f:
             data = json.load(f)
+
         for cat in data.get("categories", []):
             self.category_combo.addItem(cat)
 
+        self.category_combo.setCurrentIndex(0)
+
+
 
     def _load_assigned_category(self):
-        if not os.path.exists(CATEGORIES_JSON_PATH):
-            return
-        with open(CATEGORIES_JSON_PATH, "r") as f:
-            data = json.load(f)
-        assigned = data.get("assignments", {}).get(self.base_name, "")
-        index = self.category_combo.findText(assigned)
-        if index >= 0:
-            self.category_combo.setCurrentIndex(index)
+        try:
+            from LogicModules.Configuration import Configuration
+            assignments = Configuration.load_assignments()
+            assigned = assignments.get(self.base_name, "")
+            index = self.category_combo.findText(assigned)
+            if index >= 0:
+                self.category_combo.setCurrentIndex(index)
+        except Exception as e:
+            print(f"Failed to load assigned category: {e}")
 
     def _apply_changes(self):
         new_name = self.name_field.text().strip()
@@ -96,13 +108,8 @@ class PropertiesDialog(QtWidgets.QDialog):
         selected_category = self.category_combo.currentText()
 
         try:
-            if os.path.exists(CATEGORIES_JSON_PATH):
-                with open(CATEGORIES_JSON_PATH, "r") as f:
-                    data = json.load(f)
-            else:
-                data = {"categories": [], "assignments": {}}
-
-            assignments = data.setdefault("assignments", {})
+            from LogicModules.Configuration import Configuration  
+            assignments = Configuration.load_assignments()
 
             old_base_name = os.path.splitext(os.path.basename(self.original_path))[0]
             if old_base_name in assignments:
@@ -110,8 +117,7 @@ class PropertiesDialog(QtWidgets.QDialog):
 
             assignments[new_name] = selected_category
 
-            with open(CATEGORIES_JSON_PATH, "w") as f:
-                json.dump(data, f, indent=4)
+            Configuration.save_assignments(assignments)
 
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Category Save Error", str(e))
@@ -125,4 +131,5 @@ class PropertiesDialog(QtWidgets.QDialog):
             self.accept()
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Rename Error", str(e))
+
 

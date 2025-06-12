@@ -44,6 +44,13 @@ def refresh_asset_library(*args):
     except Exception as e:
         print(f"failed to refresh asset library: {e}")
 
+def add_mesh_to_library(*args):
+    global window_instance
+    if window_instance:
+        window_instance.add_selected_mesh()
+    else:
+        cmds.warning("Asset Library is not open")
+
 
 def initialize_asset_library():
     if cmds.menu("assetsLibraryMenu", exists=True):
@@ -52,4 +59,6 @@ def initialize_asset_library():
     cmds.menu("assetsLibraryMenu", label="Assets Library", parent="MayaWindow", tearOff=True)
     cmds.menuItem(label="Open Library", parent="assetsLibraryMenu", command=open_asset_library)
     cmds.menuItem(divider=True, parent="assetsLibraryMenu")
+    cmds.menuItem(label="Add Mesh To Library", parent="assetsLibraryMenu", command=add_mesh_to_library)
     cmds.menuItem(label="Refresh Tool", parent="assetsLibraryMenu", command=refresh_asset_library)
+

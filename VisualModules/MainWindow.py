@@ -54,8 +54,7 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         main_layout.setSpacing(0)
         main_layout.addWidget(self.toolbar)
 
-        drop_btn = QtWidgets.QPushButton("Add Mesh To Library", self)
-        drop_btn.clicked.connect(self.add_selected_mesh)
+       
 
         left_widget = QtWidgets.QWidget()
         left_layout = QtWidgets.QVBoxLayout(left_widget)
@@ -74,7 +73,7 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         splitter.setSizes([225, 575])
 
         main_layout.addWidget(splitter)
-        main_layout.addWidget(drop_btn)
+       
 
         self.toolbar.configure_requested.connect(self.open_configure_dialog)
 

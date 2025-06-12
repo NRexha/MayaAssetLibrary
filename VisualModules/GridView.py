@@ -162,7 +162,7 @@ class GridView(QtWidgets.QWidget):
 
         self.inner_widget = QtWidgets.QWidget()
         self.inner_widget.setObjectName("gridInnerWidget")
-        self.inner_widget.setContentsMargins(5, 5, 0, 0)
+        self.inner_widget.setContentsMargins(5, 0, 0, 0)
 
         self.flow_layout = FlowLayout(self.inner_widget, spacing=10)
         self.flow_layout.setContentsMargins(50, 50, 50, 50)
@@ -209,7 +209,6 @@ class GridView(QtWidgets.QWidget):
             with open(CATEGORIES_JSON_PATH, "r") as f:
                 data = json.load(f)
                 categories = data.get("categories", [])
-                print("GridView loaded categories:", categories)
 
         self.category_filter.addItems(sorted(categories))
         if current in categories or current == "All":
@@ -226,6 +225,7 @@ class GridView(QtWidgets.QWidget):
                 item.widget().deleteLater()
 
         assignments = Configuration.load_assignments()
+        print("Loaded assignments:", assignments)
 
         for path in self.all_file_paths:
             if not path.lower().endswith(('.fbx', '.obj')):
@@ -234,7 +234,9 @@ class GridView(QtWidgets.QWidget):
             base = os.path.splitext(os.path.basename(path))[0]
             assigned = assignments.get(base, None)
 
-            if category == "All" or assigned == category:
+            print(f"Asset: {base}, Assigned: {assigned}, Filter: {category}")
+
+            if category.lower() == "all" or (assigned and assigned.lower() == category.lower()):
                 item = GridItem(path, style_sheet=self._style_sheet)
                 item.clicked.connect(AssetSpawner.spawn_asset)
                 self.flow_layout.addWidget(item)

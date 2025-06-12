@@ -6,15 +6,15 @@ QDialog {
 /*---------------------------TOOL BAR---------------------------*/
 QMenuBar {
     background: transparent;
-    spacing: 0px; 
+    spacing: 0; 
     padding-left: 1px; 
-    padding-top: 0px;
-    padding-bottom : 0px;
+    padding-top: 0;
+    padding-bottom : 0;
 }
 QMenuBar::item {
     background: transparent;
     padding: 2px 6px; 
-    margin: 0px;
+    margin: 0;
     font-size: 10pt; 
     color:rgb(182, 182, 182);
 }
@@ -38,10 +38,11 @@ QTreeView {
     background-color: #1e1e1e;
     alternate-background-color: #2a2a2a;
     color: #b0b0b0;
-    padding-top: 0px;
+    padding-top: 0;
     padding-left: 4px; 
     outline : none;
 }
+
 
 QTreeView::item {
     height: 24px;
@@ -70,7 +71,7 @@ outline: none;
 }
 
 #gridInnerWidget {
-    margin-top: 4px;
+    margin-top: 0px;
     margin-left: 4px; 
 }
 
@@ -95,24 +96,27 @@ outline: none;
     background-color: rgba(103, 134, 165, 1);
 }
 
+/*---------------------------CATEGORIES LIST---------------------------*/
 QListWidget{
     background-color: #1e1e1e;
 }
 
-
-
+/*---------------------------FILETRS---------------------------*/
 QComboBox {
     background-color: #2e2e2e;
     color: white;
     border: 1px solid #555;
-    padding: 5px;
+    padding: 3px 6px;  
+    margin: 0;       
     border-radius: 3px;
 }
+
 QComboBox:hover {
     border: 1px solid #aaa;
 }
+
 QComboBox::drop-down {
-    border-left: 0px solid #555;
+    border-left: 0 solid #555;
     background: transparent; 
 }
 

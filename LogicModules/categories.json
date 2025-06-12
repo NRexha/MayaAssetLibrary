@@ -1,11 +1,7 @@
 {
     "categories": [
-        "Unassigned",
         "Weapons",
-        "Props"
-    ],
-    "assignments": {
-        "Torus": "Props",
-        "Sphere": "Weapons"
-    }
+        "Props",
+        "TestCategory"
+    ]
 }
