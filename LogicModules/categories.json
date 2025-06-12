@@ -5,6 +5,7 @@
         "Props"
     ],
     "assignments": {
-
+        "Torus": "Props",
+        "Sphere": "Weapons"
     }
 }

@@ -70,13 +70,10 @@ class PropertiesDialog(QtWidgets.QDialog):
 
     def _load_categories(self):
         self.category_combo.clear()
-        print(f"Loading categories from: {CATEGORIES_JSON_PATH}")
         if not os.path.exists(CATEGORIES_JSON_PATH):
-            print("Categories file does not exist.")
             return
         with open(CATEGORIES_JSON_PATH, "r") as f:
             data = json.load(f)
-        print("Categories JSON content:", data)
         for cat in data.get("categories", []):
             self.category_combo.addItem(cat)
 

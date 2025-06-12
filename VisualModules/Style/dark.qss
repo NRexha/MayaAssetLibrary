@@ -101,6 +101,29 @@ QListWidget{
 
 
 
+QComboBox {
+    background-color: #2e2e2e;
+    color: white;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 3px;
+}
+QComboBox:hover {
+    border: 1px solid #aaa;
+}
+QComboBox::drop-down {
+    border-left: 0px solid #555;
+    background: transparent; 
+}
+
+QComboBox QAbstractItemView {
+    background-color: #2e2e2e;
+    selection-background-color: #4a90e2;
+    color: white;
+}
+
+
+
 
 
 

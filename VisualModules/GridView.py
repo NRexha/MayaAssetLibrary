@@ -142,11 +142,18 @@ class GridItem(QtWidgets.QFrame):
 
 
 
+CATEGORIES_JSON_PATH = Configuration.get_categories_json_path()
 
 class GridView(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("gridView")
+        self._style_sheet = ""
+        self.all_file_paths = []
+
+        self.category_filter = QtWidgets.QComboBox(self)
+        self.category_filter.addItem("All")
+        self.category_filter.currentTextChanged.connect(self.apply_filter)
 
         self.scroll_area = QtWidgets.QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
@@ -155,26 +162,28 @@ class GridView(QtWidgets.QWidget):
 
         self.inner_widget = QtWidgets.QWidget()
         self.inner_widget.setObjectName("gridInnerWidget")
-        self.inner_widget.setContentsMargins(5, 5, 0, 0) 
-
-        palette = self.palette()
-        palette.setColor(QtGui.QPalette.Window, QtGui.QColor("#1e1e1e"))
-        self.setPalette(palette)
-        self.setAutoFillBackground(True)
-        self.setAttribute(QtCore.Qt.WA_OpaquePaintEvent, True)
-
+        self.inner_widget.setContentsMargins(5, 5, 0, 0)
 
         self.flow_layout = FlowLayout(self.inner_widget, spacing=10)
         self.flow_layout.setContentsMargins(50, 50, 50, 50)
-
         self.inner_widget.setLayout(self.flow_layout)
         self.scroll_area.setWidget(self.inner_widget)
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.category_filter)
         layout.addWidget(self.scroll_area)
 
-        self._style_sheet = ""
+        self.setPalette(self._get_dark_palette())
+        self.setAutoFillBackground(True)
+        self.setAttribute(QtCore.Qt.WA_OpaquePaintEvent, True)
+
+        self.refresh_categories()
+
+    def _get_dark_palette(self):
+        palette = self.palette()
+        palette.setColor(QtGui.QPalette.Window, QtGui.QColor("#1e1e1e"))
+        return palette
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
@@ -186,14 +195,47 @@ class GridView(QtWidgets.QWidget):
         self._style_sheet = style
 
     def populate(self, file_paths):
+        self.all_file_paths = file_paths
+        self._populate_filtered("All")
+
+    def refresh_categories(self):
+        self.category_filter.blockSignals(True)
+        current = self.category_filter.currentText()
+        self.category_filter.clear()
+        self.category_filter.addItem("All")
+
+        categories = []
+        if os.path.exists(CATEGORIES_JSON_PATH):
+            with open(CATEGORIES_JSON_PATH, "r") as f:
+                data = json.load(f)
+                categories = data.get("categories", [])
+                print("GridView loaded categories:", categories)
+
+        self.category_filter.addItems(sorted(categories))
+        if current in categories or current == "All":
+            self.category_filter.setCurrentText(current)
+        self.category_filter.blockSignals(False)
+
+    def apply_filter(self, category):
+        self._populate_filtered(category)
+
+    def _populate_filtered(self, category):
         while self.flow_layout.count():
             item = self.flow_layout.takeAt(0)
             if item:
                 item.widget().deleteLater()
 
-        files = [f for f in file_paths if f.lower().endswith(('.fbx', '.obj'))]
-        for f in files:
-            item = GridItem(f, style_sheet=self._style_sheet)
-            item.clicked.connect(AssetSpawner.spawn_asset)  
-            self.flow_layout.addWidget(item)
+        assignments = Configuration.load_assignments()
+
+        for path in self.all_file_paths:
+            if not path.lower().endswith(('.fbx', '.obj')):
+                continue  
+
+            base = os.path.splitext(os.path.basename(path))[0]
+            assigned = assignments.get(base, None)
+
+            if category == "All" or assigned == category:
+                item = GridItem(path, style_sheet=self._style_sheet)
+                item.clicked.connect(AssetSpawner.spawn_asset)
+                self.flow_layout.addWidget(item)
 
