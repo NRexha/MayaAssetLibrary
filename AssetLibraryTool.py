@@ -58,7 +58,7 @@ def initialize_asset_library():
 
     cmds.menu("assetsLibraryMenu", label="Assets Library", parent="MayaWindow", tearOff=True)
     cmds.menuItem(label="Open Library", parent="assetsLibraryMenu", command=open_asset_library)
-    cmds.menuItem(divider=True, parent="assetsLibraryMenu")
+    #cmds.menuItem(divider=True, parent="assetsLibraryMenu")
     cmds.menuItem(label="Add Mesh To Library", parent="assetsLibraryMenu", command=add_mesh_to_library)
-    cmds.menuItem(label="Refresh Tool", parent="assetsLibraryMenu", command=refresh_asset_library)
+    #cmds.menuItem(label="Refresh Tool", parent="assetsLibraryMenu", command=refresh_asset_library)
 

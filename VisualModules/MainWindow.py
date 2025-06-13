@@ -1,4 +1,4 @@
-from PySide2 import QtWidgets
+from PySide2 import QtWidgets, QtCore
 from shiboken2 import wrapInstance
 from maya import OpenMayaUI as omui
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
@@ -21,15 +21,17 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
     def __init__(self, parent=get_maya_main_window()):
         self.delete_instances()
         super(MainWindow, self).__init__(parent)
+        self.setContentsMargins(0, 0, 0, 0)
         self.setObjectName(self.toolName)
         self.setWindowTitle("Assets Library")
-        self.setMinimumSize(800, 500)
+        self.setMinimumSize(400, 250)
         self.current_theme = "dark" 
 
         self.style_sheet = self.get_style_sheet()
         self.setStyleSheet(self.style_sheet)
 
         central_widget = QtWidgets.QWidget()
+        central_widget.setContentsMargins(0, 0, 0, 0)
         self.setCentralWidget(central_widget)
 
         self.toolbar = ToolBar(parent=self)
@@ -59,9 +61,20 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         left_widget = QtWidgets.QWidget()
         left_layout = QtWidgets.QVBoxLayout(left_widget)
         left_layout.setContentsMargins(0, 0, 0, 0)
-        left_layout.setSpacing(2)
+        left_layout.setSpacing(0)
+
+        self.folder_tree_title = QtWidgets.QLabel("Library")
+        self.folder_tree_title.setObjectName("FolderTreeTitle")
+        self.folder_tree_title.setFixedHeight(22)
+        left_layout.addWidget(self.folder_tree_title)
 
         left_layout.addWidget(self.folder_tree)
+
+        self.categories_title = QtWidgets.QLabel("Categories")
+        self.categories_title.setObjectName("CategoryTitle")
+        self.categories_title.setFixedHeight(20)
+        self.categories_title.setStyleSheet(self.style_sheet)
+        left_layout.addWidget(self.categories_title)
 
         self.categories = Categories(self)
         self.categories.setStyleSheet(self.style_sheet)
@@ -71,6 +84,8 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         splitter.addWidget(left_widget)
         splitter.addWidget(self.grid_view)
         splitter.setSizes([225, 575])
+        splitter.setContentsMargins(0, 0, 0, 0)  
+
 
         main_layout.addWidget(splitter)
        
@@ -93,6 +108,8 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         self.setStyleSheet(self.style_sheet)
         self.toolbar.setStyleSheet(self.style_sheet)
         self.folder_tree.setStyleSheet(self.style_sheet)
+        self.categories_title.setStyleSheet(self.style_sheet)
+        self.categories.setStyleSheet(self.style_sheet)
         self.grid_view.setStyleSheet(self.style_sheet)
 
     def on_theme_changed(self, theme):

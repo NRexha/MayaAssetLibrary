@@ -9,7 +9,7 @@ class FolderTreeView(QtWidgets.QTreeView):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.model = cm()
+        self.model = QtWidgets.QFileSystemModel()
         self.model.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot)
         self.setModel(self.model)
         self.setHeaderHidden(True)
@@ -21,7 +21,7 @@ class FolderTreeView(QtWidgets.QTreeView):
         self.hideColumn(1)
         self.hideColumn(2)
         self.hideColumn(3)
-        self.header().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+
 
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
@@ -83,12 +83,7 @@ class FolderTreeView(QtWidgets.QTreeView):
                 QtWidgets.QMessageBox.warning(self, "Error", "Folder already exists.")
 
     def delete_folder(self, folder_path):
-        reply = QtWidgets.QMessageBox.question(
-            self,
-            "Delete Folder",
-            f"Are you sure you want to delete:\n{folder_path}?",
-            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
-        )
+        reply = QtWidgets.QMessageBox.question(self,"Delete Folder",f"Are you sure you want to delete:\n{folder_path}?",QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if reply == QtWidgets.QMessageBox.Yes:
             try:
                 shutil.rmtree(folder_path)

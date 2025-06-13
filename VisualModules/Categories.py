@@ -12,6 +12,7 @@ class Categories(QListWidget):
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.open_context_menu)
         self.setFixedHeight(175)
+        self.setSpacing(2)
         self.load_categories()
 
     def open_context_menu(self, pos):

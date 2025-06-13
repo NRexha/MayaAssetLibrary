@@ -1,6 +1,24 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}
+
+
 /*---------------------------MAIN WINDOW---------------------------*/
 QDialog {
     background-color: #1e1e1e;
+}
+
+QMainWindow {
+    background-color:rgb(51, 51, 51);
+    margin: 0px;
+    padding: 0px;
+}
+
+QWidget {
+    margin: 0px;
+    padding: 0px;
 }
 
 /*---------------------------TOOL BAR---------------------------*/
@@ -36,11 +54,39 @@ QMenu::item:selected {
 /*---------------------------TREE VIEW---------------------------*/
 QTreeView {
     background-color: #1e1e1e;
-    alternate-background-color: #2a2a2a;
     color: #b0b0b0;
-    padding-top: 0;
-    padding-left: 4px; 
-    outline : none;
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+QHeaderView {
+    background-color: #1e1e1e; 
+    padding: 0;
+    margin: 0;
+}
+
+QHeaderView::section {
+    background-color: #2e2e2e; 
+    color: white;
+
+    border: 1px solid #555;
+    border-left: none;
+    border-top: none;
+    border-right: none;
+    font-size: 9pt;
+    text-align: left;
+    height: 20px;
+}
+
+QLabel#FolderTreeTitle {
+    background-color: #2e2e2e;
+    color: white;
+    padding-left: 4px 6px;
+    border: 1px solid #555;
+    border-left: none;
+    border-top: none;
+    border-right: none;
 }
 
 
@@ -71,7 +117,7 @@ outline: none;
 }
 
 #gridInnerWidget {
-    margin-top: 0px;
+    margin-top: 0;
     margin-left: 4px; 
 }
 
@@ -101,14 +147,28 @@ QListWidget{
     background-color: #1e1e1e;
 }
 
+QLabel#CategoryTitle {
+    background-color: #2e2e2e;
+    color: white;
+    padding-left: 3px 6px;
+    border: 1px solid #555;
+    border-left: none;
+    border-top: none;
+    border-right: none;
+}
+
 /*---------------------------FILETRS---------------------------*/
 QComboBox {
     background-color: #2e2e2e;
     color: white;
     border: 1px solid #555;
+    border-left: none;
+    border-top: none;
+    border-right: none;
     padding: 3px 6px;  
     margin: 0;       
-    border-radius: 3px;
+    border-radius: 0;
+    height: 14.5px;
 }
 
 QComboBox:hover {
@@ -127,10 +187,31 @@ QComboBox QAbstractItemView {
 }
 
 
+/*---------------------------SCROLL BAR---------------------------*/
+QScrollBar:vertical {
+    background: transparent;
+    width: 8px;
+    margin: 0px 0px 0px 0px;
+    border-radius: 4px;
+}
 
+QScrollBar::handle:vertical {
+    background: #606060;
+    min-height: 20px;
+    border-radius: 4px;
+}
 
+QScrollBar::handle:vertical:hover {
+    background: #808080;
+}
 
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+    background: none;
+    border: none;
+}
 
-
-
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
 

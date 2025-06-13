@@ -162,7 +162,7 @@ class GridView(QtWidgets.QWidget):
 
         self.inner_widget = QtWidgets.QWidget()
         self.inner_widget.setObjectName("gridInnerWidget")
-        self.inner_widget.setContentsMargins(5, 0, 0, 0)
+        self.inner_widget.setContentsMargins(5, 5, 0, 0)
 
         self.flow_layout = FlowLayout(self.inner_widget, spacing=10)
         self.flow_layout.setContentsMargins(50, 50, 50, 50)
@@ -171,10 +171,11 @@ class GridView(QtWidgets.QWidget):
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
         layout.addWidget(self.category_filter)
         layout.addWidget(self.scroll_area)
 
-        self.setPalette(self._get_dark_palette())
+        #self.setPalette(self._get_dark_palette())
         self.setAutoFillBackground(True)
         self.setAttribute(QtCore.Qt.WA_OpaquePaintEvent, True)
 
@@ -187,7 +188,7 @@ class GridView(QtWidgets.QWidget):
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
-        painter.fillRect(self.rect(), QtGui.QColor("#1e1e1e"))
+        #painter.fillRect(self.rect(), QtGui.QColor("#1e1e1e"))
         super().paintEvent(event)
 
     def setStyleSheet(self, style):
