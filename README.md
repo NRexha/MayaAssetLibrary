@@ -1,7 +1,6 @@
 # Maya Asset Library
 
 The Maya Asset Library Tool is a custom asset manager designed to simplify asset organization and usage directly within Maya.
-![tool_window_overview](https://github.com/user-attachments/assets/cbdb2570-cc7e-427e-9625-6e35a07b6261)
 
 https://github.com/user-attachments/assets/9242a010-145d-41bb-90ed-969bef0c760e
 
